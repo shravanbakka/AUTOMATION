@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Fetch CPU Metrics') {
+            steps {
+                script {
+                    // Execute shell command to fetch CPU metrics
+                    def cpuUsage = sh(script: 'top -bn1 | grep "Cpu(s)" | sed "s/.*, *\\([0-9.]*\\)%* id.*/\\1/" | awk \'{print 100 - $1}\'', returnStdout: true).trim()
+                    
+                    // Print CPU metrics to console
+                    echo "Current CPU Usage: ${cpuUsage}%"
+                    
+                    // Write CPU metrics to a file
+                    writeFile file: 'cpu_usage.txt', text: cpuUsage
+                }
+            }
+        }
+    }
+}
